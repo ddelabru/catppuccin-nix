@@ -1,5 +1,27 @@
 {
-  catppuccin-fcitx5
+  buildCatppuccinPort,
+  lib,
+  enableRounded ? false,
 }:
 
-catppuccin-fcitx5
+buildCatppuccinPort {
+  port = "fcitx5";
+
+  dontCatppuccinInstall = true;
+
+  buildPhase = ''
+    runHook preBuild
+
+    ${lib.optionalString enableRounded ''
+      patchShebangs ./enable-rounded.sh
+      ./enable-rounded.sh
+    ''}
+
+    runHook postBuild
+  '';
+
+  postInstall = ''
+    mkdir -p $out/share/fcitx5
+    mv src/ $out/share/fcitx5/themes/
+  '';
+}
